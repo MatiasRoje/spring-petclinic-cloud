@@ -18,3 +18,9 @@ target/
 generated/
 .DS_Store
 .vscode/settings.json
+
+# jenkins terraform local
+jenkins/.terraform
+jenkins/.terraform.lock.hcl
+jenkins/terraform.tfstate
+jenkins/terraform.tfstate.backup

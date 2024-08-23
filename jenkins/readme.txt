@@ -1,0 +1,1 @@
+In Jenkins, install all recommended plugins and “GitHub Integration, Docker, Docker Pipeline, Jacoco, AnsiColor, Copy Artifact, Deploy to container, Job DSL, SonarQube Scanner, and Amazon EC2".
