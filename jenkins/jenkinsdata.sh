@@ -18,7 +18,7 @@ sudo systemctl daemon-reload
 sudo systemctl start jenkins
 sudo systemctl enable jenkins
 # install docker
-sudo install docker -y
+sudo yum install docker -y
 sudo systemctl start docker
 sudo systemctl enable docker
 sudo usermod -a -G docker ec2-user
@@ -37,11 +37,14 @@ sudo chmod +x /usr/local/bin/docker-compose
 sudo curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 sudo unzip awscliv2.zip
 sudo ./aws/install
-# install python 3
+# install python 3 and pip
 sudo yum install python3 -y
+python3 -m ensurepip --upgrade
 # install ansible
-sudo pip3 install ansible
+pip3 install ansible
 # install boto3
-sudo pip3 install boto3
+pip3 install boto3
 # install terraform
+sudo yum install -y yum-utils
+sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
 sudo yum install terraform -y
