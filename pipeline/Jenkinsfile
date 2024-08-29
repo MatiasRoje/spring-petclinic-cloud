@@ -1,61 +1,54 @@
 pipeline {
-    agent any
     environment {
-        PATH=sh(script:"echo $PATH:/usr/local/bin", returnStdout:true).trim()
-        APP_NAME="petclinic"
-        APP_REPO_NAME="datascientest-project/petclinic-staging"
-        AWS_ACCOUNT_ID=sh(script:'export PATH="$PATH:/usr/local/bin" && aws sts get-caller-identity --query Account --output text', returnStdout:true).trim()
-        AWS_REGION="eu-west-1"
-        ECR_REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+        AWS_ACCESS_KEY_ID = credentials("AWS_ACCESS_KEY_ID")
+        AWS_SECRET_ACCESS_KEY = credentials("AWS_SECRET_ACCESS_KEY")
+        AWS_DEFAULT_REGION = "eu-west-1"
+        DOCKERHUB_ID = "matiasroje"
+        DOCKERHUB_PASSW = credentials("DOCKERHUB_PASSW")
     }
+    agent any
+
     stages {
-        stage('Package Application') {
+        stage("Git Checkout") {
             steps {
-                echo 'Packaging the app into jars with maven'
-                sh ". ./jenkins/scripts/package-with-maven-container.sh"
+                git(
+                    url: "https://github.com/MatiasRoje/spring-petclinic-cloud.git",
+                    branch: "staging",
+                    credentialsId: "GITHUB_ID"
+                )
             }
         }
-        stage('Prepare Tags for Staging Docker Images') {
+        stage("Setup Env Variable") {
             steps {
-                echo 'Preparing Tags for Staging Docker Images'
-                sh ". ./jenkins/scripts/prepare-tags-ecr-for-staging-docker-images.sh"
+                script {
+                    env.REPOSITORY_PREFIX = "${DOCKERHUB_ID}"
+                    echo "Repository Prefix set to: ${env.REPOSITORY_PREFIX}"
+                }
             }
         }
-        stage('Build App Staging Docker Images') {
+        stage("Build and Push Images") {
             steps {
-                echo 'Building App Staging Images'
-                sh ". ./jenkins/scripts/build-staging-docker-images-for-ecr.sh"
-                sh 'docker image ls'
+                withMaven(maven: "Maven3.9.9") {
+                    sh '''
+                        docker --version
+                        echo $DOCKERHUB_PASSW | docker login -u $DOCKERHUB_ID --password-stdin
+
+                        # Build images
+                        mvn -X spring-boot:build-image -Pk8s -DREPOSITORY_PREFIX=$DOCKERHUB_ID
+
+                        # Push images
+                        docker push $DOCKERHUB_ID/spring-petclinic-cloud-api-gateway:latest
+                        docker push $DOCKERHUB_ID/spring-petclinic-cloud-visits-service:latest
+                        docker push $DOCKERHUB_ID/spring-petclinic-cloud-vets-service:latest
+                        docker push $DOCKERHUB_ID/spring-petclinic-cloud-customers-service:latest
+
+                        echo 'Images built and pushed successfully.'
+
+                        # Clean up local Docker images
+                        docker image prune -af
+                    '''
+                }
             }
-        }
-        stage('Push Images to ECR Repo') {
-            steps {
-                echo "Pushing ${APP_NAME} App Images to ECR Repo"
-                sh ". ./jenkins/scripts/push-staging-docker-images-to-ecr.sh"
-            }
-        }
-        stage('Deploy App on Petclinic Kubernetes Cluster'){
-            steps {
-                echo 'Deploying App on K8s Cluster'
-                // sh "rancher login $RANCHER_URL -context $RANCHER_CONTEXT -token $RANCHER_CREDS_USR:$RANCHER_CREDS_PSW"
-                // sh "envsubst < k8s/petclinic_chart/values-template.yaml > k8s/petclinic_chart/values.yaml"
-                // sh "sed -i s/HELM_VERSION/${BUILD_NUMBER}/ k8s/petclinic_chart/Chart.yaml"
-                // sh "rancher kubectl delete secret regcred -n petclinic-staging-ns || true"
-                // sh "rancher kubectl create secret generic regcred -n petclinic-staging-ns -from-file=.dockerconfigjson=$JENKINS_HOME/.docker/config.json -type=kubernetes.io/dockerconfigjson"
-                // sh "rm -f k8s/config"
-                // sh "rancher cluster kf $CLUSTERID > k8s/config"
-                // sh "helm repo add stable-petclinic s3://petclinic-helm-charts-datascientest"
-                // sh "helm package k8s/petclinic_chart"
-                // sh "helm s3 push -force petclinic_chart-${BUILD_NUMBER}.tgz stable-petclinic"
-                // sh "helm repo update"
-                // sh "AWS_REGION=$AWS_REGION helm upgrade -install petclinic-app-release stable-petclinic/petclinic_chart -version ${BUILD_NUMBER} -namespace petclinic-staging-ns -kubeconfig k8s/config"
-            }
-        }
-    }
-    post {
-        always {
-            echo 'Deleting all local images'
-            sh 'docker image prune -af'
         }
     }
 }

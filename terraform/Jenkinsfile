@@ -2,29 +2,49 @@
 pipeline {
     agent any
     environment {
-        AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
-        AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
+        AWS_ACCESS_KEY_ID = credentials("AWS_ACCESS_KEY_ID")
+        AWS_SECRET_ACCESS_KEY = credentials("AWS_SECRET_ACCESS_KEY")
         AWS_DEFAULT_REGION = "eu-west-1"
     }
     stages {
-        stage("Create an EKS Cluster") {
+        stage("Git Checkout") {
+            steps {
+                git(
+                    url: "https://github.com/MatiasRoje/spring-petclinic-cloud.git",
+                    branch: "staging",
+                    credentialsId: 'GITHUB_ID'
+                )
+            }
+        }
+        stage("Terraform init") {
             steps {
                 script {
-                    dir('terraform') {
+                    dir("terraform") {
+                        sh "terraform init -reconfigure"
                         sh "terraform init"
-                        sh "terraform apply -auto-approve"
                     }
                 }
             }
         }
-        stage("Deploy to EKS") {
+        stage("Terraform apply/destroy") {
             steps {
                 script {
-                    dir('kubernetes/test') {
-                        sh "aws eks update-kubeconfig --name petclinic-eks"
-                        sh "kubectl apply -f nginx-deployment.yaml"
-                        sh "kubectl apply -f nginx-service.yaml"
+                    dir("terraform") {
+                        sh "terraform ${action} -auto-approve"
                     }
+                }
+            }
+        }
+        stage("Connecting locally to the EKS cluster") {
+            when {
+                expression {
+                    return action == "apply"
+                }
+            }
+            steps {
+                script {
+                    sh "aws eks update-kubeconfig --name petclinic-eks"
+                    sh "sudo cp /var/lib/jenkins/.kube/config /home/ec2-user/.kube/config"
                 }
             }
         }

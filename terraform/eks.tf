@@ -114,10 +114,10 @@ resource "helm_release" "kube-prometheus-stack" {
   namespace        = "monitoring"
   create_namespace = true
 
-  # set {
-  #   name  = "grafana.adminPassword"
-  #   value = var.GRAFANA_PASSWORD
-  # }
+  set {
+    name  = "grafana.adminPassword"
+    value = var.GRAFANA_PASSWORD
+  }
 
   set {
     name  = "grafana.ingress.enabled"
