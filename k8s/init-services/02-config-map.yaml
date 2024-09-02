@@ -53,7 +53,7 @@ data:
             enabled: true
 
     customers-service-id: http://customers-service.spring-petclinic.svc.cluster.local:8080
-    visits-service-id: http://vists-service.spring-petclinic.svc.cluster.local:8080
+    visits-service-id: http://visits-service.spring-petclinic.svc.cluster.local:8080
 
     spring:
       datasource:
@@ -85,12 +85,12 @@ data:
           ribbon:
             enabled: false
         gateway:
-          x-forwarded:  
-            enabled: true 
-            for-enabled: true 
-            proto-enabled: true 
-            host-append: false  
-            port-append: false  
+          x-forwarded:
+            enabled: true
+            for-enabled: true
+            proto-enabled: true
+            host-append: false
+            port-append: false
             proto-append: false
           routes:
             - id: vets-service

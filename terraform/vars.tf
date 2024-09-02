@@ -1,14 +1,14 @@
 variable "DB_USERNAME" {
   description = "Database username"
   type        = string
-  default = "petclinic"
+  default     = "petclinic"
   sensitive   = true
 }
 
 variable "DB_PASSWORD" {
   description = "Database password"
   type        = string
-  default = "petclinicdbpassword"
+  default     = "petclinicdbpassword"
   sensitive   = true
 }
 

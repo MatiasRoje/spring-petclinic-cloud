@@ -10,15 +10,15 @@ output "database_port" {
 }
 
 output "database_instance_username" {
- description = "database instance username"
- value       = module.db.db_instance_username
- sensitive = true
+  description = "database instance username"
+  value       = module.db.db_instance_username
+  sensitive   = true
 }
 
 output "database_instance_password" {
   description = "database instance password"
-  value = var.DB_PASSWORD
-  sensitive = true
+  value       = var.DB_PASSWORD
+  sensitive   = true
 }
 
 # EKS outputs
