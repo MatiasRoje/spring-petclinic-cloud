@@ -1,0 +1,41 @@
+pipeline {
+    agent any
+
+    environment {
+        APP_REPO_NAME_1 = "petclinic/api-gateway"
+        APP_REPO_NAME_2 = "petclinic/api-gateway-staging"
+        APP_REPO_NAME_3 = "petclinic/customers-service"
+        APP_REPO_NAME_4 = "petclinic/customers-service-staging"
+        APP_REPO_NAME_5 = "petclinic/vets-service"
+        APP_REPO_NAME_6 = "petclinic/vets-service-staging"
+        APP_REPO_NAME_7 = "petclinic/visits-service"
+        APP_REPO_NAME_8 = "petclinic/visits-service-staging"
+        AWS_REGION = "eu-west-3"
+    }
+
+    stages {
+        stage('Create ECR Repositories') {
+            steps {
+                script {
+                    def repos = [
+                        env.APP_REPO_NAME_1,
+                        env.APP_REPO_NAME_2,
+                        env.APP_REPO_NAME_3,
+                        env.APP_REPO_NAME_4
+                    ]
+
+                    repos.each { repoName ->
+                        sh """
+                            aws ecr describe-repositories --region "${env.AWS_REGION}" --repository-name "${repoName}" || \
+                            aws ecr create-repository \
+                              --repository-name "${repoName}" \
+                              --image-scanning-configuration scanOnPush=false \
+                              --image-tag-mutability MUTABLE \
+                              --region "${env.AWS_REGION}"
+                        """
+                    }
+                }
+            }
+        }
+    }
+}

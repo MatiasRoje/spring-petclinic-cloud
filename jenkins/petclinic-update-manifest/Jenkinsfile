@@ -1,0 +1,45 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Clone repository') {
+            steps {
+                git(
+                    url: 'https://github.com/MatiasRoje/spring-petclinic-cloud-k8.git',
+                    branch: 'main',
+                    credentialsId: 'github'
+                )
+            }
+        }
+
+        stage('Update GIT') {
+            steps {
+                script {
+                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                        withCredentials([usernamePassword(credentialsId: 'GITHUB_TOKEN', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+                            dir("petclinic-helmchart") {
+                                sh "git config user.email rojechi@gmail.com"
+                                sh "git config user.name MatiasRoje"
+
+                                sh "#############################"
+                                // Update the version tags under each service in the prod-values.yaml
+                                sh "sed -i '/apigateway:/,/version:/ s/version: .*/version: ${DOCKERTAG}/' prod-values.yaml"
+                                sh "sed -i '/customersservice:/,/version:/ s/version: .*/version: ${DOCKERTAG}/' prod-values.yaml"
+                                sh "sed -i '/vetsservice:/,/version:/ s/version: .*/version: ${DOCKERTAG}/' prod-values.yaml"
+                                sh "sed -i '/visitsservice:/,/version:/ s/version: .*/version: ${DOCKERTAG}/' prod-values.yaml"
+
+                                sh "cat prod-values.yaml"
+
+                                sh "#############################"
+                                // Commit and push changes
+                                sh "git add ."
+                                sh "git commit -m 'Jenkins Job Update: ${env.BUILD_NUMBER} - Deployed new version of petclinic using images with tag ${DOCKERTAG}'"
+                                sh "git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/${GIT_USERNAME}/spring-petclinic-cloud-k8.git HEAD:main"
+                                }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
