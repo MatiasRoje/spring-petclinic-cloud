@@ -1,11 +1,12 @@
 # # Filter out local zones, which are not currently supported
 # # with managed node groups
-data "aws_availability_zones" "available" {
-  filter {
-    name   = "opt-in-status"
-    values = ["opt-in-not-required"]
-  }
-}
+# NOTE: Datascientest sanbox doesn't allow this action
+# data "aws_availability_zones" "available" {
+#   filter {
+#     name   = "opt-in-status"
+#     values = ["opt-in-not-required"]
+#   }
+# }
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
@@ -14,7 +15,7 @@ module "vpc" {
   name = "petclinic-vpc"
 
   cidr = "10.0.0.0/16"
-  azs  = slice(data.aws_availability_zones.available.names, 0, 3)
+  azs  = ["eu-west-3a", "eu-west-3b", "eu-west-3c"]
 
   private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
   public_subnets  = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
