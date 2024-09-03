@@ -14,17 +14,16 @@ terraform {
     }
   }
 
-  backend "s3" {
-    bucket = "cfn-datascientest-sandbox-templates-repo-35efba00"
-    key    = "jenkins/terraform.tfstate"
-    region = "eu-west-3"
-  }
+  # NOTE: Datascientest AWS sandbox doesn't provide access to S3
+  # backend "s3" {
+  #   bucket = "petclinic-project-datascientest"
+  #   key    = "jenkins/terraform.tfstate"
+  #   region = "eu-west-3"
+  # }
 }
 
 provider "aws" {
   region = var.region
-  //  access_key = ""
-  //  secret_key = ""
   //  If you have entered your credentials in AWS CLI before, you do not need to use these arguments.
 }
 
@@ -107,6 +106,9 @@ resource "aws_iam_instance_profile" "tf-jenkins-server-profile" {
 }
 
 resource "aws_eip" "tf_jenkins_eip" {
+  tags = {
+    Name = "Jenkins Server EIP"
+  }
   instance = aws_instance.tf-jenkins-server.id
 }
 

@@ -1,4 +1,4 @@
-After starting the Jenkins server, install all recommended plugins:
+After starting the Jenkins server and setup a password, install all recommended plugins:
 "GitHub Integration, Docker, Docker Pipeline, Deploy to container, Job DSL, Amazon EC2, Parameterized Trigger".
 
 # Optional: Check whether all neccesary tools are correctly installed:
@@ -7,7 +7,7 @@ docker version
 python3 -V
 terraform version
 helm version
-kubectl version #NOTE: it shows an error, ignore for the moment
+kubectl version --client
 
 # Add necessary credentials
 AWS_ACCESS_KEY_ID
@@ -17,8 +17,11 @@ GITHUB_TOKEN
 # DOCKER_ID
 # DOCKERHUB_PASSW
 
+# Configure AWS
+aws configure
+
 # Check the S3 buckets for terraform are running:
-cfn-datascientest-sandbox-templates-repo-35efba00
+petclinic-project-datascientest
 
 # Use this to connect to EKS cluster
 aws eks update-kubeconfig --region eu-west-3 --name petclinic-eks

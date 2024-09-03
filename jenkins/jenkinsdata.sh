@@ -48,9 +48,16 @@ pip3 install boto3
 sudo yum install -y yum-utils
 sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
 sudo yum install terraform -y
+
+# install kubectl
 sudo curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.30.2/2024-07-12/bin/linux/amd64/kubectl
-sudo chmod +x ./kubectl
+=chmod +x ./kubectl
+sudo mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$HOME/bin:$PATH
+sudo rm kubectl
+
+
 sudo curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
 sudo helm plugin install https://github.com/hypnoglow/helm-s3.git
+
 sudo su -s /bin/bash jenkins
 export PATH=$PATH:/usr/local/bin
