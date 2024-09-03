@@ -33,11 +33,10 @@ terraform {
     }
   }
 
-  backend "s3" {
-    bucket = "petclinic-backend-datascientest"
-    key    = "eks/terraform.tfstate"
-    region = "eu-west-1"
-  }
-
-  required_version = "~> 1.3"
+  # NOTE: Datascientest sandbox doesn't provide access to s3
+  # backend "s3" {
+  #   bucket = "petclinic-backend-datascientest"
+  #   key    = "aws/terraform.tfstate"
+  #   region = "eu-west-1"
+  # }
 }
