@@ -4,11 +4,6 @@ output "db_instance_endpoint" {
   value       = module.db.db_instance_endpoint
 }
 
-output "database_port" {
-  description = "database instance port"
-  value       = module.db.db_instance_port
-}
-
 output "database_instance_username" {
   description = "database instance username"
   value       = module.db.db_instance_username
