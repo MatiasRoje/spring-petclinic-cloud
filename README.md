@@ -17,7 +17,7 @@ This project focuses on building a modern CI/CD pipeline and running the applica
 
 ## Implementation Details
 
-### 1. **AWS Infrastructure Setup**
+### 1. **IaC - AWS Infrastructure Setup**
 We used Terraform to provision the necessary AWS infrastructure:
 - VPC with public and private subnets
 - EKS cluster deployed in private subnets
@@ -26,7 +26,7 @@ We used Terraform to provision the necessary AWS infrastructure:
 
 Backend storage for Terraform is managed via an S3 bucket to ensure team collaboration. All Terraform code resides in the `terraform` branch of the repository.
 
-### 2. **CI Pipeline**
+### 2. **Continuous Integration (CI) Pipeline**
 We developed a Jenkins CI pipeline to:
 - Build and test the application inside Docker images
 - Push the images to private ECR repositories
