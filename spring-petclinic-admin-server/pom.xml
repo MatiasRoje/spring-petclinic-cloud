@@ -39,6 +39,7 @@
         </dependency>
 
         <!-- Spring Boot Admin -->
+        <!-- Test         -->
         <dependency>
             <groupId>de.codecentric</groupId>
             <artifactId>spring-boot-admin-starter-server</artifactId>
