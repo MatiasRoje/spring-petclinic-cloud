@@ -1,5 +1,5 @@
 After starting the Jenkins server and setup a password, install all recommended plugins:
-"GitHub Integration, Docker, Docker Pipeline, Deploy to container, Job DSL, Amazon EC2, Parameterized Trigger".
+"GitHub Integration, Docker, Docker Pipeline, Deploy to container, Job DSL, Amazon EC2, Parameterized Trigger, Multibranch Scan Webhook Trigger".
 
 # Optional: Check whether all neccesary tools are correctly installed:
 java -version

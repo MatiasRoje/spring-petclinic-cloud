@@ -3,7 +3,7 @@ pipeline {
         AWS_ACCESS_KEY_ID = credentials("AWS_ACCESS_KEY_ID")
         AWS_SECRET_ACCESS_KEY = credentials("AWS_SECRET_ACCESS_KEY")
         AWS_DEFAULT_REGION = "eu-west-3"
-        ECR_REGISTRY = "472454369658.dkr.ecr.eu-west-3.amazonaws.com"
+        ECR_REGISTRY = "339713077897.dkr.ecr.eu-west-3.amazonaws.com"
     }
     agent any
 
@@ -12,7 +12,7 @@ pipeline {
             steps {
                 git(
                     url: "https://github.com/MatiasRoje/spring-petclinic-cloud.git",
-                    branch: "staging",
+                    branch: "master",
                     credentialsId: "GITHUB_ID"
                 )
             }
