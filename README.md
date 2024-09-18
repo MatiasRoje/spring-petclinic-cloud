@@ -14,7 +14,8 @@ This project focuses on building a modern CI/CD pipeline and running the applica
 - **ArgoCD**: Continuous Deployment (CD) and GitOps for Kubernetes manifests
 - **Terraform**: Infrastructure as Code (IaC)
 - **Prometheus & Grafana**: Monitoring and alerts
-
+- **Velero**: Backup solution for Kubernetes resources
+  
 ## Implementation Details
 
 ### 1. **IaC - AWS Infrastructure Setup**
@@ -22,7 +23,7 @@ We used Terraform to provision the necessary AWS infrastructure:
 - VPC with public and private subnets
 - EKS cluster deployed in private subnets
 - Multi-AZ RDS database
-- Helm, Prometheus, and Grafana for cluster monitoring
+- Helm, Velero, Prometheus and Grafana
 
 Backend storage for Terraform is managed via an S3 bucket to ensure team collaboration. All Terraform code resides in the `terraform` branch of the repository.
 
@@ -40,6 +41,9 @@ Using AWS Route 53, we configured the domain (https://petclinicdev.online/) to r
 
 ### 5. **Monitoring and Alerts**
 Prometheus pulls metrics from the EKS cluster, and Grafana visualizes them. We set up alerting to notify our team via Slack when key metrics, such as CPU usage, exceed predefined thresholds.
+
+### 6. **Backup Policy**
+Velero stores all backup data from the running Kubernetes cluster in an S3 bucket located in the same AWS Region. It is configured to create daily backups at 3 AM for both production and staging environments. Additionally, AWS RDS provides automated backups by default, ensuring point-in-time recovery for the database in case of any data loss or failure.
 
 ---
 
